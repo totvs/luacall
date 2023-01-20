@@ -14,9 +14,9 @@ O LuaCall possibilita a integração entre o **AdvPL/TLPP e o Lua Script**, atra
 
 * **Open Source**, com licença MIT, a mais permissiva existente.
 * Está entre as linguagens script mais **rápidas** atualmente.
+* Largamente usada em jogos, trazendo **melhorias contínuas** ao seu código.
 * Possui um **garbage collector** nativo e eficiente.
 * Tem um tamanho médio de apenas **350K**.
-* Largamente usada em jogos, trazendo **melhorias contínuas** ao seu código.
 * E um mecanismo que permite **embutir seu motor** em linguagens como C, C++, C#, Java, etc.
 
 ### **Isso o torna ideal para, rotinas de:**
@@ -38,9 +38,10 @@ As bibliotecas necessárias para uso do exemplo **lua_execindll.prw** estão no 
 ```
 bin/
 ├── linux
+│   ├── liblua54.so
 │   ├── luacall.so
-│   ├── socket.lua
-│   └── socket.so
+│   ├── socket.so
+│   └── socket.lua
 └── windows
     ├── lua54.dll
     ├── luacall.dll
@@ -48,7 +49,7 @@ bin/
     └── socket.lua
 ```
 
-> Para execução dos exemplos as bibliotecas devem estar na **pasta do SmartClient**, pois sua localização é obtida através da função **`getClientDir()`**, você pode alterar este caminho de acordo com sua necessidade.
+> Para execução dos exemplos, as bibliotecas devem estar na **pasta do SmartClient**, pois sua localização é obtida através da função **`getClientDir()`**, você pode alterar este caminho de acordo com sua necessidade, **mas recomendo testes**, para garantir que todas a **dependências do próprio Lua** estejam "resolvidas" em relação aos módulos externos que venha à utilizar, como o LuaSocket, por exemplo.
 
 ```js
 local clientDir := getClientDir()
@@ -194,7 +195,7 @@ return var1
 Caso o trecho apresente **erros de execução**, eles também serão exibidos.
 
 > 🚨 **Importante:**<br>
-Como explicado inicialmente, a localização das bibliotecas é obtida através da função **`getClientDir()`**, ao executar o exemplo em **Linux**, via **WebApp** (navegador), o diretório corrente não será o diretório retornado pela função (`/opt/web-agent`), inviabilizando a localização dos arquivos **socket.so/dll** e **socket.lua**, apresentando o erro abaixo:
+Como explicado inicialmente, a localização das bibliotecas é obtida através da função **`getClientDir()`**, ao executar o exemplo em **Linux**, via **WebApp** (navegador), o diretório corrente não será o diretório retornado pela função getClientDir(): `/opt/web-agent`, inviabilizando a localização dos arquivos **socket.so/dll** e **socket.lua**, apresentando o erro abaixo:
 
 ```sh
 [string "  -- Lembre-se de iniciar o tcpServer.py, con..."]:6: module 'socket' not found:
@@ -297,9 +298,10 @@ Para sua comodidade as bibliotecas **luacall e LuaSocket** estão compiladas e d
 ```
 bin/
 ├── linux
+│   ├── liblua54.so
 │   ├── luacall.so
-│   ├── socket.lua
-│   └── socket.so
+│   ├── socket.so
+│   └── socket.lua
 └── windows
     ├── lua54.dll
     ├── luacall.dll
@@ -346,11 +348,11 @@ A partir da raiz deste pacote
 ```powershell
 cd <raiz do pacote>
 cd luacall
-
-gcc -O3 -fpic -shared -o luacall.so -I../lua/include luacall.c ../lua/linux/liblua54.a
+# Copie o arquivo <raiz do projeto>/lua/linux/liblua54.so para pasta <raiz do projeto>/luacall
+gcc -O3 -fpic -shared -I../lua/include luacall.c liblua54.so -o luacall.so
 
 ls -al *.so
--rwxr-xr-x 1 mansano mansano 305312 jan  7 15:10 luacall.so
+-rwxr-xr-x 1 mansano mansano 16616 jan  7 15:10 luacall.so
 ```
 
 ## **Compilando a biblioteca luacall.dll para Windows - Testado com VS 2022 Community**
@@ -436,16 +438,15 @@ luasocket/
 
 ## **Compilando o LuaSocket para Linux - Testado com o GCC 10.2.1**
 
-Ao utilizar o LuaSocket através dos executáveis da linguagem Lua, todas as suas dependências são automaticamente resolvidas.
+Ao compilar o LuaSocket em Linux, é necessário linkar a referência à biblioteca **liblua54.so**. 
 
-> Ao fazer as chamadas do **LuaSocket em Linux**, através de uma biblioteca(.so), como é o caso do **luacall.so**, essas dependências causam queda na execução.
+Para tanto:
 
-Para resolver o problema é necessário linkar a biblioteca **liblua54.a** estaticamente no projeto LuaSocket.
-
-Para tanto, edite o arquivo \<raiz do projeto>\/luasocket/src/**makefile** e ajuste a propriedade **LDFLAGS_linux** como no exemplo abaixo, **respeitando o caminho para o arquivo liblua54.a**
+* Copie o arquivo \<raiz do projeto\>/lua/linux/**liblua54.so** para pasta \<raiz do projeto\>/luasocket/src 
+* Edite o arquivo \<raiz do projeto>\/luasocket/src/**makefile** e ajuste a propriedade **LDFLAGS_linux** como no exemplo abaixo:
 
 ```powershell
-LDFLAGS_linux=-O -shared -fpic ../../lua/linux/liblua54.a -o
+LDFLAGS_linux=-O -shared -fpic liblua54.so -o
 ```
 Agora basta compilar o projeto:
 ```powershell
@@ -462,10 +463,8 @@ Após a compilação, as bibliotecas estarão disponíveis no diretório \<raiz 
 Para utilizar a biblioteca socket.so que compilou, renomeie o arquivo:
 * socket-3.0.0.so => socket.so
 
->Para utilizar os exemplos deste pacote você só irá precisar do arquivo **socket.so**<br>
+>Para utilizar os exemplos deste pacote você só irá precisar do arquivo **socket.so**.<br>
 >Para conhecer mais sobre o LuaSocket, seus exemplos e a utilização das demais bibliotecas, acesse: https://github.com/lunarmodules/luasocket
-
-> 🚨 **Importante:**<br>Como o LuaSocket foi compilado estaticamente para Linux, o arquivo **liblua54.so** não é necessário para execução.
 
 ## **Compilando o LuaSocket para Windows - Testado com o VS 2022 Community**
 
@@ -504,6 +503,7 @@ Para utilizar as bibliotecas que compilou, renomeie os arquivos respectivamente 
     * `windows/` - Biblioteca dinâmica do Lua para Windows.
 * **bin/**
     * `linux/`
+        * `liblua54.so` - Biblioteca necessária para execução do Lua Script.
         * `luacall.so` - Biblioteca responsável pela integração AdvPL/TLPP x Lua.
         * `socket.so` - Biblioteca LuaSocket responsável pela comunicação TCP/UDP.
         * `socket.lua` - Arquivo comum entre Linux e Windows, necessário em ambos sistemas operacionais para comunicação TCP/UDP.

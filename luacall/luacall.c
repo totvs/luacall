@@ -9,16 +9,22 @@ Linux
     Compilando o .so - Testado com GCC 10.2.1:
         cd <raiz do pacote>
         cd luacall
-        gcc -O3 -fpic -shared -o luacall.so -I../lua/include luacall.c ../lua/linux/liblua54.a
+        # Copie o arquivo <raiz do projeto>/lua/linux/liblua54.so para pasta <raiz do projeto>/luacall
+        gcc -O3 -fpic -shared -I../lua/include luacall.c liblua54.so -o luacall.so
 
     Compilando como executavel => *Apenas para testes das funcoes internas:
         gcc -o luacall luacall.c -I./lua-5.4.4_shared/src lua_libs/liblua.a -lm -ldl -Wl,-E -Wl,-rpath,.
 
     Dicas:
-        Ver as dependencias de um elf/.a => U = Undefined
+        Ver as dependencias de simbolos de um elf/.a => U = Undefined
             nm socket.so | grep lua_get
                             U lua_gettop
             00000000000048d0 t timeout_lua_gettime
+
+        Ver a dependencias (Shared library) de um elf/.so
+            readelf -d socket-3.0.0.so | grep NEEDED
+            0x0000000000000001 (NEEDED)             Shared library: [liblua54.so]
+            0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
 
         Ver informacoes do elf, como RPATH
             objdump -x ./smartclient | grep RUNPATH (algumas distros usam "RPATH")

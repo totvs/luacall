@@ -180,11 +180,10 @@ CFLAGS_linux=$(LUAINC:%=-I%) $(DEF) -Wall -Wshadow -Wextra \
 # ---------------------------------------------------------
 # Mansano:
 # ---------------------------------------------------------
-# Inclui liblua54.a (estatica) na likagem pois o require do Lua em Linux
-# nao consegue utilizar as depencias diretamente do luacall.so
-# com isso a execucao do socket.so NAO DEPENDE do liblua54.so
+# Ao compilar o LuaSocket em Linux, eh necessário linkar 
+# a referência a biblioteca liblua54.so.
 # ---------------------------------------------------------
-LDFLAGS_linux=-O -shared -fpic ../../lua/linux/liblua54.a -o
+LDFLAGS_linux=-O -shared -fpic liblua54.so -o
 
 LD_linux=gcc
 SOCKET_linux=usocket.o
