@@ -206,10 +206,12 @@ Como explicado inicialmente, a localização das bibliotecas é obtida através 
 	no file './socket/init.lua'
 ```
 
-A solução é executar o exemplo diretamente através do **WebAgent**, passando o `IP:Porta` do Servidor WebApp e o `caminho para o seu navegador`, abaixo o exemplo:
+A solução é executar o exemplo diretamente através do **WebAgent**, via linha de comando, passando o `IP:Porta` do Servidor WebApp e o `caminho para o seu navegador`, siga **exatamente** o exemplo abaixo:
 
 ```sh
-/opt/web-agent/web-agent launch "http://192.168.1.26:8033" --browser="/usr/bin/microsoft-edge"
+cd /opt/web-agent/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./
+./web-agent launch "http://192.168.1.26:8033" --browser="/usr/bin/microsoft-edge"
 ```
 > Mais informações acesse:<br>
 https://tdn.totvs.com/display/tec/2.+WebApp+-+WebAgent#id-2.WebAppWebAgent-command_line
