@@ -49,7 +49,7 @@ bin/
     └── socket.lua
 ```
 
-> Para execução dos exemplos, as bibliotecas devem estar na **pasta do SmartClient**, pois sua localização é obtida através da função **`getClientDir()`**, você pode alterar este caminho de acordo com sua necessidade, **mas recomendo testes**, para garantir que todas a **dependências do próprio Lua** estejam "resolvidas" em relação aos módulos externos que venha à utilizar, como o LuaSocket, por exemplo.
+> Para execução dos exemplos, as bibliotecas devem estar na **pasta do SmartClient ou do WebAgent**, caso esteja utilizando o WebApp, pois sua localização é obtida através da função **`getClientDir()`**, e também para resolver as dependências das DLLs/SOs que você venha a utilizar através do Lua, como o LuaSocket, por exemplo.
 
 ```js
 local clientDir := getClientDir()
